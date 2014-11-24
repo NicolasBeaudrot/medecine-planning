@@ -85,9 +85,28 @@ namespace MedecinPlanning
                 {
                     for (int i = 0; i < lineValues.Count(); i++)
                     {
-                        if (!string.IsNullOrWhiteSpace(lineValues[i]))
+                        string contrainte = lineValues[i];
+                        if (!string.IsNullOrWhiteSpace(contrainte))
                         {
-                            _internes[i].Contraintes.Add(DateTime.Parse(lineValues[i], CultureInfo.CurrentCulture));
+                            contrainte = contrainte.Trim();
+
+                            if (contrainte.StartsWith("[") && contrainte.EndsWith("]"))
+                            {
+                                contrainte = contrainte.Replace("[", string.Empty).Replace("]", string.Empty);
+                                var contrainteDates = contrainte.Split('-');
+
+                                var startContrainte = DateTime.Parse(contrainteDates[0], CultureInfo.CurrentCulture);
+                                var endContrainte = DateTime.Parse(contrainteDates[1], CultureInfo.CurrentCulture);
+
+                                for (DateTime date = startContrainte; date <= endContrainte; date = date.AddDays(1))
+                                {
+                                    _internes[i].Contraintes.Add(date);  
+                                }
+                            }
+                            else
+                            {
+                                _internes[i].Contraintes.Add(DateTime.Parse(contrainte, CultureInfo.CurrentCulture));    
+                            }
                         }
                     }
                 }
